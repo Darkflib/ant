@@ -1,0 +1,15 @@
+{
+  "name": "ant-pathfinding",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Ant colony pathfinding visualiser — BFS, DFS, Dijkstra, A*, Greedy and more.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
+  }
+}

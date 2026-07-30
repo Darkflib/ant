@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="Ant colony pathfinding visualiser — watch BFS, DFS, Dijkstra, A* and Greedy Best-First plan routes across a seeded grid."
+    />
+    <title>ant · pathfinding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0e14'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%2300f5d4'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div class="brand-text">
+            <h1>ant<span class="accent">::</span>pathfinding</h1>
+            <p>seeded grid search — plan, walk, leave a trail</p>
+          </div>
+        </div>
+        <div class="legend" id="legend"></div>
+      </header>
+
+      <main class="stage">
+        <aside class="panel" id="panel">
+          <section class="control-group">
+            <h2>Simulation</h2>
+            <div class="btn-row">
+              <button id="btn-start" class="btn primary" type="button">Start</button>
+              <button id="btn-pause" class="btn" type="button" disabled>Pause</button>
+              <button id="btn-reset" class="btn ghost" type="button">Reset</button>
+            </div>
+            <button id="btn-step" class="btn ghost wide" type="button">Step ▸</button>
+          </section>
+
+          <section class="control-group">
+            <h2>Algorithm</h2>
+            <label class="field">
+              <span>Search</span>
+              <select id="sel-algo"></select>
+            </label>
+            <p class="algo-desc" id="algo-desc"></p>
+          </section>
+
+          <section class="control-group">
+            <h2>Grid</h2>
+            <label class="field">
+              <span>Size <em id="val-size"></em></span>
+              <input id="rng-size" type="range" min="16" max="128" step="8" />
+            </label>
+            <label class="field">
+              <span>Obstacle density <em id="val-density"></em></span>
+              <input id="rng-density" type="range" min="0" max="45" step="1" />
+            </label>
+            <label class="field">
+              <span>Food count <em id="val-food"></em></span>
+              <input id="rng-food" type="range" min="1" max="24" step="1" />
+            </label>
+            <label class="field checkbox">
+              <input id="chk-maze" type="checkbox" />
+              <span>Maze walls (recursive division)</span>
+            </label>
+          </section>
+
+          <section class="control-group">
+            <h2>Seed</h2>
+            <div class="seed-row">
+              <input id="txt-seed" type="text" spellcheck="false" autocomplete="off" />
+              <button id="btn-reseed" class="btn ghost" type="button" title="Random seed">⟳</button>
+            </div>
+          </section>
+
+          <section class="control-group">
+            <h2>Motion</h2>
+            <label class="field">
+              <span>Speed <em id="val-speed"></em></span>
+              <input id="rng-speed" type="range" min="1" max="60" step="1" />
+            </label>
+          </section>
+
+          <section class="control-group">
+            <h2>Trail</h2>
+            <label class="field checkbox">
+              <input id="chk-trail" type="checkbox" checked />
+              <span>Show pheromone trail</span>
+            </label>
+            <label class="field checkbox">
+              <input id="chk-explored" type="checkbox" checked />
+              <span>Show explored cells</span>
+            </label>
+            <label class="field">
+              <span>Trail fade <em id="val-fade"></em></span>
+              <input id="rng-fade" type="range" min="0" max="100" step="1" />
+            </label>
+          </section>
+
+          <section class="control-group stats">
+            <h2>Telemetry</h2>
+            <dl id="stats"></dl>
+          </section>
+        </aside>
+
+        <div class="canvas-wrap">
+          <canvas id="grid" width="720" height="720"></canvas>
+          <div class="canvas-hint">click: toggle wall · shift+click: place food · drag to paint</div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <span>vanilla js · vite · canvas</span>
+        <span id="status" class="status">idle</span>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
