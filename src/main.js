@@ -48,6 +48,11 @@ const el = {
   stats: $('stats'),
   status: $('status'),
   legend: $('legend'),
+  explain: $('btn-explain'),
+  modal: $('modal'),
+  modalClose: $('modal-close'),
+  algoCards: $('algo-cards'),
+  compareTable: $('compare-table'),
 }
 
 // ---- Simulation state ------------------------------------------------------
@@ -282,6 +287,64 @@ function buildLegend() {
     .join('')
 }
 
+// ---- Explainer modal -------------------------------------------------------
+function buildExplainer() {
+  const yes = '<span class="yn y">yes</span>'
+  const no = '<span class="yn n">no</span>'
+
+  el.algoCards.innerHTML = Object.values(ALGORITHMS)
+    .map((a) => {
+      const badges = [
+        a.optimal ? '<span class="badge good">shortest path</span>' : '<span class="badge warn">not shortest</span>',
+        a.uses.includes('h') ? '<span class="badge">heuristic</span>' : '',
+        `<span class="badge muted">${a.frontier}</span>`,
+      ]
+        .filter(Boolean)
+        .join('')
+      return `
+        <article class="algo-card">
+          <header><h4>${a.label}</h4><span class="tag">${a.short}</span></header>
+          <div class="badges">${badges}</div>
+          <p>${a.detail}</p>
+          <p class="tradeoff"><span>Trade-off</span> ${a.tradeoff}</p>
+        </article>`
+    })
+    .join('')
+
+  el.compareTable.innerHTML =
+    `<thead><tr><th>Algorithm</th><th>Expands by</th><th>Shortest path</th><th>Heuristic</th></tr></thead><tbody>` +
+    Object.values(ALGORITHMS)
+      .map(
+        (a) =>
+          `<tr><td>${a.label}</td><td><code>${a.uses}</code></td>` +
+          `<td>${a.optimal ? yes : no}</td>` +
+          `<td>${a.uses.includes('h') ? yes : no}</td></tr>`
+      )
+      .join('') +
+    `</tbody>`
+}
+
+function openModal() {
+  el.modal.hidden = false
+  document.body.classList.add('modal-open')
+}
+function closeModal() {
+  el.modal.hidden = true
+  document.body.classList.remove('modal-open')
+}
+
+function initExplainer() {
+  buildExplainer()
+  el.explain.addEventListener('click', openModal)
+  el.modalClose.addEventListener('click', closeModal)
+  el.modal.addEventListener('click', (e) => {
+    if (e.target.hasAttribute('data-close')) closeModal()
+  })
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !el.modal.hidden) closeModal()
+  })
+}
+
 function initControls() {
   // Algorithm dropdown.
   el.algo.innerHTML = Object.entries(ALGORITHMS)
@@ -424,6 +487,7 @@ function refreshValueLabels() {
 
 // ---- Boot ------------------------------------------------------------------
 initControls()
+initExplainer()
 rebuild()
 updateStats()
 requestAnimationFrame(loop)
