@@ -48,6 +48,7 @@ const el = {
   stats: $('stats'),
   status: $('status'),
   legend: $('legend'),
+  app: $('app'),
   explain: $('btn-explain'),
   modal: $('modal'),
   modalClose: $('modal-close'),
@@ -324,13 +325,22 @@ function buildExplainer() {
     `</tbody>`
 }
 
+let lastFocused = null
 function openModal() {
+  lastFocused = document.activeElement
   el.modal.hidden = false
   document.body.classList.add('modal-open')
+  // Make the background inert so keyboard / AT focus can't reach the
+  // obscured controls while the dialog is open, then move focus inside.
+  el.app.inert = true
+  el.modalClose.focus()
 }
 function closeModal() {
   el.modal.hidden = true
   document.body.classList.remove('modal-open')
+  el.app.inert = false
+  // Return focus to whatever opened the dialog.
+  if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus()
 }
 
 function initExplainer() {
@@ -340,8 +350,26 @@ function initExplainer() {
   el.modal.addEventListener('click', (e) => {
     if (e.target.hasAttribute('data-close')) closeModal()
   })
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !el.modal.hidden) closeModal()
+  // Keep Tab focus cycling within the dialog while it's open.
+  el.modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal()
+      return
+    }
+    if (e.key !== 'Tab') return
+    const focusable = el.modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    if (focusable.length === 0) return
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
   })
 }
 
