@@ -2,26 +2,77 @@
 // step() expands exactly one node, so the render loop can advance the search
 // at any speed and draw the frontier / visited set as it grows.
 
+// Single source of truth for algorithm metadata. `desc` is the short sidebar
+// blurb; the richer fields feed the "How it works" explainer.
+//   optimal  — always returns a shortest path
+//   complete — always finds a path if one exists
+//   frontier — the data structure that decides expansion order
+//   uses     — what the priority is based on: g (cost so far), h (heuristic)
 export const ALGORITHMS = {
   bfs: {
     label: 'Breadth-First Search',
+    short: 'BFS',
     desc: 'Explores in rings from the nest. Unweighted-shortest path, fans out evenly in every direction.',
+    frontier: 'FIFO queue',
+    uses: 'insertion order',
+    optimal: true,
+    complete: true,
+    detail:
+      'BFS expands cells in the exact order it discovers them, so the search grows outward as a widening ring of equal distance from the nest. Because every step costs the same, the first time it reaches the food it has necessarily taken a shortest route.',
+    tradeoff:
+      'Guaranteed shortest path on an unweighted grid, but it explores almost everything closer than the food — a lot of wasted work when the goal is far away.',
   },
   dfs: {
     label: 'Depth-First Search',
+    short: 'DFS',
     desc: 'Dives down one branch until it dead-ends, then backtracks. Fast but rarely finds the shortest route.',
+    frontier: 'LIFO stack',
+    uses: 'insertion order',
+    optimal: false,
+    complete: true,
+    detail:
+      'DFS always expands the most recently discovered cell, so it plunges down a single corridor until it hits a wall or dead end, then unwinds and tries the next branch. The frontier stays small and it can reach a distant goal quickly.',
+    tradeoff:
+      'Very memory-light and often fast, but the path it returns wanders and is almost never the shortest. Great for showing how exploration order alone changes behaviour.',
   },
   dijkstra: {
-    label: "Dijkstra",
+    label: 'Dijkstra',
+    short: 'Dijkstra',
     desc: 'Expands by cheapest cumulative cost. Guarantees the shortest path; explores broadly like BFS on a uniform grid.',
+    frontier: 'min-priority queue',
+    uses: 'g — cost so far',
+    optimal: true,
+    complete: true,
+    detail:
+      'Dijkstra always expands the cell with the lowest cost-so-far (g). On this uniform grid every move costs 1, so it behaves almost identically to BFS — but the priority-queue formulation is what generalises to weighted terrain.',
+    tradeoff:
+      'Shortest path with weighted edges too, but with no sense of direction it still fans out in all directions, exploring far more than it needs to.',
   },
   astar: {
     label: 'A*',
+    short: 'A*',
     desc: 'Dijkstra guided by a Manhattan heuristic. Shortest path while aiming straight at the food.',
+    frontier: 'min-priority queue',
+    uses: 'g + h — cost + estimate',
+    optimal: true,
+    complete: true,
+    detail:
+      'A* orders the frontier by g + h: the cost already paid plus a Manhattan-distance estimate of the cost remaining. The heuristic biases the search toward the goal, so it explores a slim corridor rather than a full ring while still guaranteeing the shortest path (the heuristic never over-estimates).',
+    tradeoff:
+      'The best of both worlds here — optimal like Dijkstra, but explores a fraction of the cells. The usual default for grid pathfinding.',
   },
   greedy: {
     label: 'Greedy Best-First',
+    short: 'Greedy',
     desc: 'Always steps toward the goal by heuristic alone. Very fast, can be fooled by walls into detours.',
+    frontier: 'min-priority queue',
+    uses: 'h — estimate only',
+    optimal: false,
+    complete: true,
+    detail:
+      'Greedy Best-First ignores the cost paid so far and expands whichever frontier cell looks closest to the goal (lowest h). This drives it straight at the food and it often reaches it after touching very few cells.',
+    tradeoff:
+      'Blisteringly fast in open space, but a wall between it and the goal can lure it into a long detour — the returned path is frequently far from optimal.',
   },
 }
 

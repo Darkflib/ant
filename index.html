@@ -30,7 +30,12 @@
             <p>seeded grid search — plan, walk, leave a trail</p>
           </div>
         </div>
-        <div class="legend" id="legend"></div>
+        <div class="topbar-right">
+          <div class="legend" id="legend"></div>
+          <button id="btn-explain" class="btn ghost explain-btn" type="button">
+            <span class="q">?</span> How it works
+          </button>
+        </div>
       </header>
 
       <main class="stage">
@@ -123,6 +128,36 @@
         <span id="status" class="status">idle</span>
       </footer>
     </div>
+
+    <div class="modal" id="modal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="modal-close" id="modal-close" type="button" aria-label="Close">×</button>
+        <h2 id="modal-title">How it works</h2>
+        <p class="modal-intro">
+          Each <strong>ant</strong> starts at the <em class="c-nest">nest</em> and plans a route to the
+          nearest <em class="c-food">food</em> using the chosen search algorithm. As it plans you see the
+          <em class="c-explored">explored</em> cells it has already checked and the live
+          <em class="c-frontier">frontier</em> — the edge of the search waiting to be expanded. Once a route
+          is found, the ant walks the <em class="c-path">path</em>, leaving a fading
+          <em class="c-trail">pheromone trail</em>. Every algorithm searches the same seeded map, so you can
+          compare how differently they explore.
+        </p>
+
+        <div class="algo-cards" id="algo-cards"></div>
+
+        <h3 class="modal-subhead">At a glance</h3>
+        <div class="table-scroll">
+          <table class="compare" id="compare-table"></table>
+        </div>
+        <p class="modal-foot">
+          Shortest path = always returns a minimum-length route · Heuristic = uses a Manhattan-distance
+          estimate to aim at the goal. Switch algorithms while paused and press <strong>Step ▸</strong> to
+          watch a single expansion at a time.
+        </p>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
